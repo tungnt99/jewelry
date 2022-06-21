@@ -1,0 +1,141 @@
+CREATE TABLE `role` (
+  `id` int PRIMARY KEY AUTO_INCREMENT,
+  `name` varchar(20)
+);
+
+CREATE TABLE `account` (
+  `id` int PRIMARY KEY AUTO_INCREMENT,
+  `email` varchar(150) unique not null,
+  `password` varchar(32) NOT NULL,
+  `fullname` varchar(50),
+  `phoneNo` varchar(15),
+  `address` varchar(255),
+  `role_id` int,
+  `token` varchar(32),
+  `created_at` datetime,
+  `updated_at` datetime
+);
+
+CREATE TABLE `category` (
+  `id` int PRIMARY KEY AUTO_INCREMENT,
+  `category_name` varchar(50) UNIQUE NOT NULL
+);
+
+CREATE TABLE `brand` (
+  `id` int PRIMARY KEY AUTO_INCREMENT,
+  `brand_name` varchar(100) UNIQUE NOT NULL
+);
+
+CREATE TABLE `material` (
+  `id` int PRIMARY KEY AUTO_INCREMENT,
+  `material_name` varchar(100) UNIQUE NOT NULL
+);
+
+CREATE TABLE `material_detail` (
+  `id` int PRIMARY KEY AUTO_INCREMENT,
+  `material_id` int,
+  `color` varchar(50),
+  `age` varchar(10)
+);
+
+CREATE TABLE `gemstone` (
+  `id` int PRIMARY KEY AUTO_INCREMENT,
+  `gemstone_name` varchar(50) UNIQUE NOT NULL
+);
+
+CREATE TABLE `product` (
+  `id` int PRIMARY KEY AUTO_INCREMENT,
+  `title` varchar(350) UNIQUE NOT NULL,
+  `description` longtext,
+  `thumbnail` varchar(255),
+  `price` float,
+  `gender` varchar(7),
+  `category_id` int,
+  `brand_id` int,
+  `material_id` int,
+  `created_at` datetime,
+  `updated_at` datetime,
+  `soft_delete` int default '0',
+  `deleted_at` datetime 
+);
+
+CREATE TABLE `thumbnail` (
+  `id` int PRIMARY KEY AUTO_INCREMENT,
+  `product_id` int,
+  `thumbnail` varchar(255)
+);
+
+CREATE TABLE `size` (
+  `id` int PRIMARY KEY AUTO_INCREMENT,
+  `size` varchar(50) UNIQUE NOT NULL,
+  `category_id` int
+);
+
+CREATE TABLE `feedback` (
+  `id` int PRIMARY KEY AUTO_INCREMENT,
+  `fullname` varchar(50),
+  `email` varchar(150),
+  `phoneNo` varchar(15),
+  `subject_name` varchar(255),
+  `note` varchar(500),
+  `created_at` datetime,
+  `status` varchar(20)
+);
+
+CREATE TABLE `product_order` (
+  `id` int PRIMARY KEY AUTO_INCREMENT,
+  `account_id` int,
+  `note` varchar(500),
+  `order_date` datetime,
+  `status` varchar(20),
+  `canceled_at` datetime
+);
+
+CREATE TABLE `order_detail` (
+  `id` int PRIMARY KEY AUTO_INCREMENT,
+  `order_id` int,
+  `product_id` int,
+  `size_id` int,
+  `price` float,
+  `quantity` int
+);
+
+CREATE TABLE `product_size` (
+  `product_id` int,
+  `size_id` int
+);
+
+CREATE TABLE `product_gemstone` (
+  `product_id` int,
+  `gemstone_id` int
+);
+
+ALTER TABLE `product` ADD FOREIGN KEY (`category_id`) REFERENCES `category` (`id`);
+
+ALTER TABLE `product` ADD FOREIGN KEY (`brand_id`) REFERENCES `brand` (`id`);
+
+ALTER TABLE `order_detail` ADD FOREIGN KEY (`order_id`) REFERENCES `product_order` (`id`);
+
+ALTER TABLE `order_detail` ADD FOREIGN KEY (`size_id`) REFERENCES `size` (`id`);
+
+ALTER TABLE `size` ADD FOREIGN KEY (`category_id`) REFERENCES `category` (`id`);
+
+ALTER TABLE `account` ADD FOREIGN KEY (`role_id`) REFERENCES `role` (`id`);
+
+ALTER TABLE `product_gemstone` ADD FOREIGN KEY (`product_id`) REFERENCES `product` (`id`);
+
+ALTER TABLE `product_gemstone` ADD FOREIGN KEY (`gemstone_id`) REFERENCES `gemstone` (`id`);
+
+ALTER TABLE `product_size` ADD FOREIGN KEY (`product_id`) REFERENCES `product` (`id`);
+
+ALTER TABLE `product_size` ADD FOREIGN KEY (`size_id`) REFERENCES `size` (`id`);
+
+ALTER TABLE `order_detail` ADD FOREIGN KEY (`product_id`) REFERENCES `product` (`id`);
+
+ALTER TABLE `thumbnail` ADD FOREIGN KEY (`product_id`) REFERENCES `product` (`id`);
+
+ALTER TABLE `product` ADD FOREIGN KEY (`material_id`) REFERENCES `material_detail` (`id`);
+
+ALTER TABLE `material_detail` ADD FOREIGN KEY (`material_id`) REFERENCES `material` (`id`);
+
+ALTER TABLE `product_order` ADD FOREIGN KEY (`account_id`) REFERENCES `account` (`id`);
